@@ -1,0 +1,74 @@
+# Import libraries
+import pandas as pd
+import numpy as np
+import re
+import nltk
+
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score, classification_report
+
+# Download stopwords (run once)
+nltk.download('stopwords')
+
+# Load dataset (make sure your CSV has 'label' and 'text' columns)
+data = pd.read_csv('spam.csv', encoding='latin-1')
+
+# Keep only required columns
+data = data[['v1', 'v2']]
+data.columns = ['label', 'text']
+
+# Convert labels to numeric
+data['label'] = data['label'].map({'ham': 0, 'spam': 1})
+
+# Preprocessing
+stop_words = set(stopwords.words('english'))
+
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-zA-Z]', ' ', text)
+    words = text.split()
+    words = [word for word in words if word not in stop_words]
+    return ' '.join(words)
+
+data['cleaned'] = data['text'].apply(clean_text)
+
+# Feature extraction
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(data['cleaned'])
+y = data['label']
+
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Train model
+model = MultinomialNB()
+model.fit(X_train, y_train)
+
+# Predictions
+y_pred = model.predict(X_test)
+
+# Evaluation
+print(\"\\n=== Model Evaluation ===\")
+print(\"Accuracy:\", accuracy_score(y_test, y_pred))
+print(\"\\nClassification Report:\\n\")
+print(classification_report(y_test, y_pred))
+
+# Prediction function
+def predict_email(text):
+    processed = clean_text(text)
+    vector = vectorizer.transform([processed])
+    prediction = model.predict(vector)
+    return \"Spam\" if prediction[0] == 1 else \"Ham\"
+
+# Test examples
+print(\"\\n=== Sample Predictions ===\")
+print(\"Message: You won a free lottery ticket!\")
+print(\"Prediction:\", predict_email(\"You won a free lottery ticket!\"))
+
+print(\"\\nMessage: Let's meet tomorrow at 10 AM\")
+print(\"Prediction:\", predict_email(\"Let's meet tomorrow at 10 AM\"))
