@@ -1,0 +1,12 @@
+spam-email-ai-ml/
+│── data/
+│   └── spam.csv
+│── src/
+│   ├── preprocess.py
+│   ├── model.py
+│   ├── train.py
+│   ├── predict.py
+│── models/
+│   └── spam_classifier.pkl
+│── requirements.txt
+│── README.md
