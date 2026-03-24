@@ -1,0 +1,21 @@
+=== Model Evaluation ===
+Accuracy: 0.97
+
+Classification Report:
+
+              precision    recall  f1-score   support
+
+           0       0.98      0.99      0.99       965
+           1       0.95      0.91      0.93       150
+
+    accuracy                           0.97      1115
+   macro avg       0.96      0.95      0.96      1115
+weighted avg       0.97      0.97      0.97      1115
+
+
+=== Sample Predictions ===
+Message: You won a free lottery ticket!
+Prediction: Spam
+
+Message: Let's meet tomorrow at 10 AM
+Prediction: Ham
